@@ -72,8 +72,7 @@ def get_store_details(url):
         if address_block_html:
             # The street address can contain other tags like <strong> and <br>
             street_address_html = extract_text(r'<span itemprop="streetAddress">(.*?)</span>', address_block_html, clean=False)
-            address1 = extract_text(r'.*', street_address_html, clean=True) if street_address_html else None
-
+            address1 = extract_text(r'(.*)', street_address_html, clean=True) if street_address_html else None
             city = extract_text(r'<span itemprop="addressLocality">(.*?)</span>', address_block_html)
             state = extract_text(r'<span itemprop="addressRegion">(.*?)</span>', address_block_html)
             postcode = extract_text(r'<span itemprop="postalCode">(.*?)</span>', address_block_html)
