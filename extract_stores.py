@@ -17,7 +17,7 @@ def extract_urls_from_sitemap(filepath):
         tree = ET.parse(filepath)
         root = tree.getroot()
         # Handle the namespace
-        namespace = {'ns': 'https://www.sitemaps.org/schemas/sitemap/0.9'}
+        namespace = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
         urls = [elem.text for elem in root.findall('.//ns:loc', namespace)]
         return urls
     except Exception as e:
