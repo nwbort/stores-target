@@ -30,6 +30,7 @@ jobs:
           echo -e "# Scheduled scraper\n\nFor $REPO_DESC" > README.md 
         fi
         chmod +x scrape.sh
+        chmod +x download.sh
       env:
         REPO_DESC: ${{ github.event.repository.description }}
     - name: Run the scraper
