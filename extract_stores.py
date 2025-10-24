@@ -6,6 +6,7 @@ from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 import time
 import argparse
+import re
 
 SITEMAP_FILE = "target.com.au-stores-sitemap.xml.xml"
 verbose = False
