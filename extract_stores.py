@@ -2,7 +2,7 @@ import json
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from urllib.request import urlopen
+import urllib.request
 from urllib.error import URLError, HTTPError
 import time
 import argparse
@@ -26,13 +26,28 @@ def extract_urls_from_sitemap(filepath):
 
 def get_store_details(url):
     """Fetch a Target store page and extract details from the HTML."""
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    req = urllib.request.Request(url, headers=headers)
+    
+    html = None
     try:
         if verbose:
             print(f"Fetching: {url}", file=sys.stderr)
-        
-        with urlopen(url, timeout=10) as response:
-            html = response.read().decode('utf-8', errors='ignore')
 
+        with urllib.request.urlopen(req, timeout=10) as response:
+            html = response.read().decode('utf-8', errors='ignore')
+    except (URLError, HTTPError) as e:
+        print(f"Error fetching {url}: {e}", file=sys.stderr)
+        return None
+    
+    # If HTML was not fetched, return None
+    if not html:
+        return None
+
+    try:
         # Helper function to extract text using a regular expression
         def extract_text(pattern, text, group=1, clean=True):
             match = re.search(pattern, text, re.DOTALL)
@@ -40,7 +55,6 @@ def get_store_details(url):
                 return None
             result = match.group(group).strip()
             if clean:
-                # Clean HTML tags and consolidate whitespace
                 result = re.sub('<[^<]+?>', '', result).strip()
                 result = re.sub(r'\s+', ' ', result)
             return result
@@ -59,7 +73,7 @@ def get_store_details(url):
             # The street address can contain other tags like <strong> and <br>
             street_address_html = extract_text(r'<span itemprop="streetAddress">(.*?)</span>', address_block_html, clean=False)
             address1 = extract_text(r'.*', street_address_html, clean=True) if street_address_html else None
-            
+
             city = extract_text(r'<span itemprop="addressLocality">(.*?)</span>', address_block_html)
             state = extract_text(r'<span itemprop="addressRegion">(.*?)</span>', address_block_html)
             postcode = extract_text(r'<span itemprop="postalCode">(.*?)</span>', address_block_html)
@@ -77,7 +91,6 @@ def get_store_details(url):
                     "weekDay": day.strip().upper()
                 })
 
-        # Assume the locationId is the number at the end of the URL
         location_id_match = re.search(r'/(\d+)$', url)
         location_id = location_id_match.group(1) if location_id_match else None
 
@@ -97,15 +110,11 @@ def get_store_details(url):
             'latitude': float(latitude) if latitude else None,
             'longitude': float(longitude) if longitude else None,
             'tradingHours': trading_hours_list,
-            'typename': 'Location',  # Updated typename
+            'typename': 'Location',
             'url': url
         }
         
         return store_data
-        
-    except (URLError, HTTPError) as e:
-        print(f"Error fetching {url}: {e}", file=sys.stderr)
-        return None
     except Exception as e:
         print(f"Error processing {url}: {e}", file=sys.stderr)
         return None
@@ -142,11 +151,9 @@ def main():
             if verbose:
                 print(f"  [{i}/{len(urls)}] Failed to extract", file=sys.stderr)
         
-        # Be polite to the server
         time.sleep(0.1)
     
-    # Print summary
-    print(f"Extracted {len(all_stores)} stores", file=sys.stderr)
+    print(f"\nExtracted {len(all_stores)} stores", file=sys.stderr)
     if errors:
         print(f"Failed to extract {len(errors)} stores:", file=sys.stderr)
         for idx, url in errors:
