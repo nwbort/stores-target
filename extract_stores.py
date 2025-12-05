@@ -7,6 +7,7 @@ from urllib.error import URLError, HTTPError
 import time
 import argparse
 import re
+import gzip
 
 SITEMAP_FILE = "target.com.au-stores-sitemap.xml.xml"
 verbose = False
@@ -28,7 +29,10 @@ def get_store_details(url):
     """Fetch a Target store page and extract details from the HTML."""
     
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-AU,en;q=0.9',
+    'Accept-Encoding': 'gzip, deflate',
     }
     req = urllib.request.Request(url, headers=headers)
     
@@ -38,7 +42,10 @@ def get_store_details(url):
             print(f"Fetching: {url}", file=sys.stderr)
 
         with urllib.request.urlopen(req, timeout=10) as response:
-            html = response.read().decode('utf-8', errors='ignore')
+            data = response.read()
+            if response.info().get('Content-Encoding') == 'gzip':
+                data = gzip.decompress(data)
+            html = data.decode('utf-8', errors='ignore')
     except (URLError, HTTPError) as e:
         print(f"Error fetching {url}: {e}", file=sys.stderr)
         return None
