@@ -53,23 +53,37 @@ def get_store_details(url, session, max_retries=3):
 
             response = session.get(url, headers=headers, timeout=10)
 
+            if verbose:
+                print(f"  Response: HTTP {response.status_code}", file=sys.stderr)
+                print(f"  Content-Length: {len(response.content)} bytes", file=sys.stderr)
+                print(f"  Content-Type: {response.headers.get('Content-Type', 'unknown')}", file=sys.stderr)
+                if hasattr(response, 'url'):
+                    print(f"  Final URL: {response.url}", file=sys.stderr)
+
             if response.status_code == 200:
                 html = response.text
+                if verbose:
+                    print(f"  ✓ Successfully fetched page", file=sys.stderr)
                 break
             elif response.status_code == 403:
+                if verbose:
+                    print(f"  ✗ Got 403 Forbidden", file=sys.stderr)
+                    # Show first 500 chars of response to see if there's a message
+                    preview = response.text[:500] if response.text else "(empty)"
+                    print(f"  Response preview: {preview[:200]}...", file=sys.stderr)
                 if attempt < max_retries - 1:
                     wait_time = 2 ** attempt
                     if verbose:
-                        print(f"  Got 403, waiting {wait_time}s before retry...", file=sys.stderr)
+                        print(f"  Waiting {wait_time}s before retry...", file=sys.stderr)
                     time.sleep(wait_time)
                 else:
-                    print(f"Error fetching {url}: HTTP {response.status_code}", file=sys.stderr)
+                    print(f"✗ Error fetching {url}: HTTP {response.status_code}", file=sys.stderr)
                     return None
             else:
-                print(f"Error fetching {url}: HTTP {response.status_code}", file=sys.stderr)
+                print(f"✗ Error fetching {url}: HTTP {response.status_code}", file=sys.stderr)
                 return None
         except Exception as e:
-            print(f"Error fetching {url}: {e}", file=sys.stderr)
+            print(f"✗ Error fetching {url}: {e}", file=sys.stderr)
             if attempt < max_retries - 1:
                 wait_time = 2 ** attempt
                 time.sleep(wait_time)
@@ -218,7 +232,10 @@ def main():
     # This makes us look more like a real browser
     try:
         if verbose:
-            print("Establishing session with target.com.au...", file=sys.stderr)
+            print("=" * 60, file=sys.stderr)
+            print("ESTABLISHING SESSION", file=sys.stderr)
+            print("=" * 60, file=sys.stderr)
+            print("Visiting https://www.target.com.au/...", file=sys.stderr)
         warmup_headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -228,13 +245,23 @@ def main():
             'Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1',
         }
-        session.get('https://www.target.com.au/', headers=warmup_headers, timeout=10)
+        warmup_response = session.get('https://www.target.com.au/', headers=warmup_headers, timeout=10)
+        if verbose:
+            print(f"Response: HTTP {warmup_response.status_code}", file=sys.stderr)
+            print(f"Cookies received: {len(session.cookies)} cookie(s)", file=sys.stderr)
+            for cookie in session.cookies:
+                print(f"  - {cookie.name}: {cookie.value[:20]}...", file=sys.stderr)
+            print(f"Waiting 2 seconds...", file=sys.stderr)
         time.sleep(2)  # Wait a bit after initial connection
         if verbose:
-            print("Session established successfully\n", file=sys.stderr)
+            print("✓ Session established successfully", file=sys.stderr)
+            print("=" * 60, file=sys.stderr)
+            print("", file=sys.stderr)
     except Exception as e:
         if verbose:
-            print(f"Warning: Could not establish session: {e}\n", file=sys.stderr)
+            print(f"✗ Warning: Could not establish session: {e}", file=sys.stderr)
+            print("=" * 60, file=sys.stderr)
+            print("", file=sys.stderr)
 
     for i, url in enumerate(urls, 1):
         store_data = get_store_details(url, session)

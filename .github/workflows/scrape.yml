@@ -43,7 +43,7 @@ jobs:
     - name: Install Python dependencies
       run: pip install -r requirements.txt
     - name: Extract store details
-      run: python extract_stores.py > stores.json
+      run: python extract_stores.py --limit 3 -v > stores.json
     - name: Commit and push
       run: |-
         git config user.name "Automated"
