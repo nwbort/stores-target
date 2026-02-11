@@ -20,13 +20,7 @@ Options:
 
 ## Requirements
 
-- Python 3.x
-- `requests` library
-
-Install dependencies:
-```bash
-pip install requests
-```
+- Python 3.x (no external dependencies required)
 
 ## Known Issues: Proxy Restrictions
 
@@ -71,7 +65,7 @@ If you're in a restricted environment, you may need to:
 - Includes retry logic with exponential backoff for transient failures
 - Modern browser headers to avoid bot detection
 - Rate limiting (0.5s delay between requests)
-- Session management for efficient connection pooling
+- No external dependencies - uses Python standard library only
 
 ## Output Format
 

@@ -5,8 +5,9 @@ from pathlib import Path
 import time
 import argparse
 import re
-import requests
-from requests.exceptions import RequestException
+import urllib.request
+from urllib.error import URLError, HTTPError
+import gzip
 
 SITEMAP_FILE = "target.com.au-stores-sitemap.xml.xml"
 verbose = False
@@ -24,7 +25,7 @@ def extract_urls_from_sitemap(filepath):
         print(f"Error parsing sitemap: {e}", file=sys.stderr)
         return []
 
-def get_store_details(url, session, max_retries=3):
+def get_store_details(url, max_retries=3):
     """Fetch a Target store page and extract details from the HTML."""
 
     headers = {
@@ -49,24 +50,28 @@ def get_store_details(url, session, max_retries=3):
                 retry_msg = f" (attempt {attempt + 1}/{max_retries})" if attempt > 0 else ""
                 print(f"Fetching: {url}{retry_msg}", file=sys.stderr)
 
-            response = session.get(url, headers=headers, timeout=15)
-
-            if response.status_code == 200:
-                html = response.text
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=15) as response:
+                data = response.read()
+                if response.info().get('Content-Encoding') == 'gzip':
+                    data = gzip.decompress(data)
+                html = data.decode('utf-8', errors='ignore')
                 break
-            elif response.status_code == 403:
+
+        except HTTPError as e:
+            if e.code == 403:
                 if attempt < max_retries - 1:
                     wait_time = 2 ** attempt
                     if verbose:
                         print(f"  Got 403, waiting {wait_time}s before retry...", file=sys.stderr)
                     time.sleep(wait_time)
                 else:
-                    print(f"Error fetching {url}: HTTP {response.status_code}", file=sys.stderr)
+                    print(f"Error fetching {url}: HTTP {e.code}", file=sys.stderr)
                     return None
             else:
-                print(f"Error fetching {url}: HTTP {response.status_code}", file=sys.stderr)
+                print(f"Error fetching {url}: HTTP {e.code}", file=sys.stderr)
                 return None
-        except RequestException as e:
+        except URLError as e:
             print(f"Error fetching {url}: {e}", file=sys.stderr)
             if attempt < max_retries - 1:
                 wait_time = 2 ** attempt
@@ -192,16 +197,8 @@ def main():
     all_stores = []
     errors = []
 
-    # Create a session to maintain cookies and connection pooling
-    session = requests.Session()
-    # Bypass proxy to avoid 403 errors from proxy
-    session.proxies = {
-        'http': None,
-        'https': None
-    }
-
     for i, url in enumerate(urls, 1):
-        store_data = get_store_details(url, session)
+        store_data = get_store_details(url)
         if store_data:
             all_stores.append(store_data)
             if verbose:
