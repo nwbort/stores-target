@@ -1,1 +1,740 @@
-[]
+[
+  {
+    "state": "VIC",
+    "storeName": "Geelong",
+    "storeCode": "5001",
+    "url": "https://www.target.com.au/store/vic/geelong/5001"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Coffs Harbour",
+    "storeCode": "5002",
+    "url": "https://www.target.com.au/store/nsw/coffs-harbour/5002"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Mackay",
+    "storeCode": "5003",
+    "url": "https://www.target.com.au/store/qld/mackay/5003"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Ballarat",
+    "storeCode": "5004",
+    "url": "https://www.target.com.au/store/vic/ballarat/5004"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Albury",
+    "storeCode": "5005",
+    "url": "https://www.target.com.au/store/nsw/albury/5005"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Wodonga",
+    "storeCode": "5006",
+    "url": "https://www.target.com.au/store/vic/wodonga/5006"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Shepparton",
+    "storeCode": "5007",
+    "url": "https://www.target.com.au/store/vic/shepparton/5007"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Bendigo",
+    "storeCode": "5008",
+    "url": "https://www.target.com.au/store/vic/bendigo/5008"
+  },
+  {
+    "state": "SA",
+    "storeName": "Centrepoint",
+    "storeCode": "5009",
+    "url": "https://www.target.com.au/store/sa/centrepoint/5009"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Cessnock",
+    "storeCode": "5011",
+    "url": "https://www.target.com.au/store/nsw/cessnock/5011"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Glendale",
+    "storeCode": "5016",
+    "url": "https://www.target.com.au/store/nsw/glendale/5016"
+  },
+  {
+    "state": "SA",
+    "storeName": "Tea Tree Plaza",
+    "storeCode": "5021",
+    "url": "https://www.target.com.au/store/sa/tea-tree-plaza/5021"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Warrnambool",
+    "storeCode": "5023",
+    "url": "https://www.target.com.au/store/vic/warrnambool/5023"
+  },
+  {
+    "state": "SA",
+    "storeName": "Newton",
+    "storeCode": "5024",
+    "url": "https://www.target.com.au/store/sa/newton/5024"
+  },
+  {
+    "state": "SA",
+    "storeName": "Edwardstown",
+    "storeCode": "5026",
+    "url": "https://www.target.com.au/store/sa/edwardstown/5026"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Runaway Bay",
+    "storeCode": "5027",
+    "url": "https://www.target.com.au/store/qld/runaway-bay/5027"
+  },
+  {
+    "state": "TAS",
+    "storeName": "Launceston",
+    "storeCode": "5028",
+    "url": "https://www.target.com.au/store/tas/launceston/5028"
+  },
+  {
+    "state": "WA",
+    "storeName": "Fremantle",
+    "storeCode": "5036",
+    "url": "https://www.target.com.au/store/wa/fremantle/5036"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Maroochydore",
+    "storeCode": "5038",
+    "url": "https://www.target.com.au/store/qld/maroochydore/5038"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Tweed Heads",
+    "storeCode": "5040",
+    "url": "https://www.target.com.au/store/nsw/tweed-heads/5040"
+  },
+  {
+    "state": "WA",
+    "storeName": "Morley",
+    "storeCode": "5043",
+    "url": "https://www.target.com.au/store/wa/morley/5043"
+  },
+  {
+    "state": "WA",
+    "storeName": "Carousel",
+    "storeCode": "5045",
+    "url": "https://www.target.com.au/store/wa/carousel/5045"
+  },
+  {
+    "state": "SA",
+    "storeName": "Sefton Park",
+    "storeCode": "5047",
+    "url": "https://www.target.com.au/store/sa/sefton-park/5047"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Bundaberg",
+    "storeCode": "5048",
+    "url": "https://www.target.com.au/store/qld/bundaberg/5048"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Rockhampton",
+    "storeCode": "5049",
+    "url": "https://www.target.com.au/store/qld/rockhampton/5049"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Leichhardt",
+    "storeCode": "5055",
+    "url": "https://www.target.com.au/store/nsw/leichhardt/5055"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Knox City",
+    "storeCode": "5058",
+    "url": "https://www.target.com.au/store/vic/knox-city/5058"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Buranda",
+    "storeCode": "5059",
+    "url": "https://www.target.com.au/store/qld/buranda/5059"
+  },
+  {
+    "state": "WA",
+    "storeName": "Innaloo",
+    "storeCode": "5065",
+    "url": "https://www.target.com.au/store/wa/innaloo/5065"
+  },
+  {
+    "state": "WA",
+    "storeName": "Midland",
+    "storeCode": "5069",
+    "url": "https://www.target.com.au/store/wa/midland/5069"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Sale",
+    "storeCode": "5075",
+    "url": "https://www.target.com.au/store/vic/sale/5075"
+  },
+  {
+    "state": "WA",
+    "storeName": "Bull Creek",
+    "storeCode": "5076",
+    "url": "https://www.target.com.au/store/wa/bull-creek/5076"
+  },
+  {
+    "state": "SA",
+    "storeName": "Elizabeth",
+    "storeCode": "5077",
+    "url": "https://www.target.com.au/store/sa/elizabeth/5077"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Springwood",
+    "storeCode": "5083",
+    "url": "https://www.target.com.au/store/qld/springwood/5083"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Southland",
+    "storeCode": "5086",
+    "url": "https://www.target.com.au/store/vic/southland/5086"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Chatswood",
+    "storeCode": "5091",
+    "url": "https://www.target.com.au/store/nsw/chatswood/5091"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Eastgardens",
+    "storeCode": "5095",
+    "url": "https://www.target.com.au/store/nsw/eastgardens/5095"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Fountain Gate",
+    "storeCode": "5097",
+    "url": "https://www.target.com.au/store/vic/fountain-gate/5097"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Frankston",
+    "storeCode": "5098",
+    "url": "https://www.target.com.au/store/vic/frankston/5098"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Glen Waverley",
+    "storeCode": "5099",
+    "url": "https://www.target.com.au/store/vic/glen-waverley/5099"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Waurn Ponds",
+    "storeCode": "5100",
+    "url": "https://www.target.com.au/store/vic/waurn-ponds/5100"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Northland",
+    "storeCode": "5121",
+    "url": "https://www.target.com.au/store/vic/northland/5121"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Goulburn",
+    "storeCode": "5122",
+    "url": "https://www.target.com.au/store/nsw/goulburn/5122"
+  },
+  {
+    "state": "ACT",
+    "storeName": "Belconnen",
+    "storeCode": "5123",
+    "url": "https://www.target.com.au/store/act/belconnen/5123"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Mt Druitt",
+    "storeCode": "5125",
+    "url": "https://www.target.com.au/store/nsw/mt-druitt/5125"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Robina",
+    "storeCode": "5126",
+    "url": "https://www.target.com.au/store/qld/robina/5126"
+  },
+  {
+    "state": "SA",
+    "storeName": "Marion",
+    "storeCode": "5127",
+    "url": "https://www.target.com.au/store/sa/marion/5127"
+  },
+  {
+    "state": "WA",
+    "storeName": "Rockingham",
+    "storeCode": "5128",
+    "url": "https://www.target.com.au/store/wa/rockingham/5128"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Browns Plains",
+    "storeCode": "5133",
+    "url": "https://www.target.com.au/store/qld/browns-plains/5133"
+  },
+  {
+    "state": "SA",
+    "storeName": "Reynella",
+    "storeCode": "5134",
+    "url": "https://www.target.com.au/store/sa/reynella/5134"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Capalaba",
+    "storeCode": "5135",
+    "url": "https://www.target.com.au/store/qld/capalaba/5135"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Charlestown",
+    "storeCode": "5136",
+    "url": "https://www.target.com.au/store/nsw/charlestown/5136"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Toowoomba",
+    "storeCode": "5139",
+    "url": "https://www.target.com.au/store/qld/toowoomba/5139"
+  },
+  {
+    "state": "SA",
+    "storeName": "Hollywood Plaza",
+    "storeCode": "5142",
+    "url": "https://www.target.com.au/store/sa/hollywood-plaza/5142"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Parramatta",
+    "storeCode": "5144",
+    "url": "https://www.target.com.au/store/nsw/parramatta/5144"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Port Macquarie",
+    "storeCode": "5145",
+    "url": "https://www.target.com.au/store/nsw/port-macquarie/5145"
+  },
+  {
+    "state": "NT",
+    "storeName": "Palmerston",
+    "storeCode": "5146",
+    "url": "https://www.target.com.au/store/nt/palmerston/5146"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Griffith",
+    "storeCode": "5147",
+    "url": "https://www.target.com.au/store/nsw/griffith/5147"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Shellharbour",
+    "storeCode": "5154",
+    "url": "https://www.target.com.au/store/nsw/shellharbour/5154"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Morayfield",
+    "storeCode": "5156",
+    "url": "https://www.target.com.au/store/qld/morayfield/5156"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Chirnside Park",
+    "storeCode": "5157",
+    "url": "https://www.target.com.au/store/vic/chirnside-park/5157"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Brimbank Central",
+    "storeCode": "5158",
+    "url": "https://www.target.com.au/store/vic/brimbank-central/5158"
+  },
+  {
+    "state": "TAS",
+    "storeName": "Hobart",
+    "storeCode": "5161",
+    "url": "https://www.target.com.au/store/tas/hobart/5161"
+  },
+  {
+    "state": "ACT",
+    "storeName": "Tuggeranong",
+    "storeCode": "5162",
+    "url": "https://www.target.com.au/store/act/tuggeranong/5162"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Tuggerah",
+    "storeCode": "5164",
+    "url": "https://www.target.com.au/store/nsw/tuggerah/5164"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Chermside",
+    "storeCode": "5166",
+    "url": "https://www.target.com.au/store/qld/chermside/5166"
+  },
+  {
+    "state": "QLD",
+    "storeName": "North Lakes",
+    "storeCode": "5167",
+    "url": "https://www.target.com.au/store/qld/north-lakes/5167"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Airport West",
+    "storeCode": "5168",
+    "url": "https://www.target.com.au/store/vic/airport-west/5168"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Hornsby",
+    "storeCode": "5169",
+    "url": "https://www.target.com.au/store/nsw/hornsby/5169"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Burwood",
+    "storeCode": "5171",
+    "url": "https://www.target.com.au/store/nsw/burwood/5171"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Strathpine",
+    "storeCode": "5172",
+    "url": "https://www.target.com.au/store/qld/strathpine/5172"
+  },
+  {
+    "state": "WA",
+    "storeName": "Bunbury",
+    "storeCode": "5173",
+    "url": "https://www.target.com.au/store/wa/bunbury/5173"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Tamworth",
+    "storeCode": "5175",
+    "url": "https://www.target.com.au/store/nsw/tamworth/5175"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Castle Hill",
+    "storeCode": "5177",
+    "url": "https://www.target.com.au/store/nsw/castle-hill/5177"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Blacktown",
+    "storeCode": "5178",
+    "url": "https://www.target.com.au/store/nsw/blacktown/5178"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Greensborough",
+    "storeCode": "5179",
+    "url": "https://www.target.com.au/store/vic/greensborough/5179"
+  },
+  {
+    "state": "WA",
+    "storeName": "Joondalup",
+    "storeCode": "5180",
+    "url": "https://www.target.com.au/store/wa/joondalup/5180"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Brisbane",
+    "storeCode": "5184",
+    "url": "https://www.target.com.au/store/qld/brisbane/5184"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Mildura",
+    "storeCode": "5194",
+    "url": "https://www.target.com.au/store/vic/mildura/5194"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Bribie Island",
+    "storeCode": "5195",
+    "url": "https://www.target.com.au/store/qld/bribie-island/5195"
+  },
+  {
+    "state": "SA",
+    "storeName": "Unley",
+    "storeCode": "5197",
+    "url": "https://www.target.com.au/store/sa/unley/5197"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Helensvale",
+    "storeCode": "5198",
+    "url": "https://www.target.com.au/store/qld/helensvale/5198"
+  },
+  {
+    "state": "NT",
+    "storeName": "Alice Springs",
+    "storeCode": "5213",
+    "url": "https://www.target.com.au/store/nt/alice-springs/5213"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Merrylands",
+    "storeCode": "5219",
+    "url": "https://www.target.com.au/store/nsw/merrylands/5219"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Somerville",
+    "storeCode": "5220",
+    "url": "https://www.target.com.au/store/vic/somerville/5220"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Sunbury",
+    "storeCode": "5226",
+    "url": "https://www.target.com.au/store/vic/sunbury/5226"
+  },
+  {
+    "state": "SA",
+    "storeName": "Gawler",
+    "storeCode": "5227",
+    "url": "https://www.target.com.au/store/sa/gawler/5227"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Taree",
+    "storeCode": "5228",
+    "url": "https://www.target.com.au/store/nsw/taree/5228"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Carindale",
+    "storeCode": "5233",
+    "url": "https://www.target.com.au/store/qld/carindale/5233"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Point Cook",
+    "storeCode": "5269",
+    "url": "https://www.target.com.au/store/vic/point-cook/5269"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Grafton",
+    "storeCode": "5271",
+    "url": "https://www.target.com.au/store/nsw/grafton/5271"
+  },
+  {
+    "state": "TAS",
+    "storeName": "Burnie",
+    "storeCode": "5273",
+    "url": "https://www.target.com.au/store/tas/burnie/5273"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Ipswich",
+    "storeCode": "5276",
+    "url": "https://www.target.com.au/store/qld/ipswich/5276"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Lithgow",
+    "storeCode": "5277",
+    "url": "https://www.target.com.au/store/nsw/lithgow/5277"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Forest Hill",
+    "storeCode": "5278",
+    "url": "https://www.target.com.au/store/vic/forest-hill/5278"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Broadway",
+    "storeCode": "5286",
+    "url": "https://www.target.com.au/store/nsw/broadway/5286"
+  },
+  {
+    "state": "WA",
+    "storeName": "Armadale",
+    "storeCode": "5287",
+    "url": "https://www.target.com.au/store/wa/armadale/5287"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Kotara",
+    "storeCode": "5288",
+    "url": "https://www.target.com.au/store/nsw/kotara/5288"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Plenty Valley",
+    "storeCode": "5290",
+    "url": "https://www.target.com.au/store/vic/plenty-valley/5290"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Carlingford",
+    "storeCode": "5292",
+    "url": "https://www.target.com.au/store/nsw/carlingford/5292"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Horsham",
+    "storeCode": "5293",
+    "url": "https://www.target.com.au/store/vic/horsham/5293"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Mount Ommaney",
+    "storeCode": "5298",
+    "url": "https://www.target.com.au/store/qld/mount-ommaney/5298"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Macarthur",
+    "storeCode": "5303",
+    "url": "https://www.target.com.au/store/nsw/macarthur/5303"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Indooroopilly",
+    "storeCode": "5380",
+    "url": "https://www.target.com.au/store/qld/indooroopilly/5380"
+  },
+  {
+    "state": "TAS",
+    "storeName": "Mowbray",
+    "storeCode": "5391",
+    "url": "https://www.target.com.au/store/tas/mowbray/5391"
+  },
+  {
+    "state": "SA",
+    "storeName": "West Lakes",
+    "storeCode": "5394",
+    "url": "https://www.target.com.au/store/sa/west-lakes/5394"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Glenquarie",
+    "storeCode": "5395",
+    "url": "https://www.target.com.au/store/nsw/glenquarie/5395"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Wollongong",
+    "storeCode": "5407",
+    "url": "https://www.target.com.au/store/nsw/wollongong/5407"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Wangaratta",
+    "storeCode": "5411",
+    "url": "https://www.target.com.au/store/vic/wangaratta/5411"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Mt Gravatt",
+    "storeCode": "5414",
+    "url": "https://www.target.com.au/store/qld/mt-gravatt/5414"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Pacific Fair",
+    "storeCode": "5415",
+    "url": "https://www.target.com.au/store/qld/pacific-fair/5415"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Cranbourne",
+    "storeCode": "5417",
+    "url": "https://www.target.com.au/store/vic/cranbourne/5417"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Chadstone",
+    "storeCode": "5419",
+    "url": "https://www.target.com.au/store/vic/chadstone/5419"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Eastland",
+    "storeCode": "5420",
+    "url": "https://www.target.com.au/store/vic/eastland/5420"
+  },
+  {
+    "state": "VIC",
+    "storeName": "Werribee",
+    "storeCode": "5423",
+    "url": "https://www.target.com.au/store/vic/werribee/5423"
+  },
+  {
+    "state": "NSW",
+    "storeName": "Narellan",
+    "storeCode": "5424",
+    "url": "https://www.target.com.au/store/nsw/narellan/5424"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Springfield Orion",
+    "storeCode": "5426",
+    "url": "https://www.target.com.au/store/qld/springfield-orion/5426"
+  },
+  {
+    "state": "WA",
+    "storeName": "Subiaco",
+    "storeCode": "5429",
+    "url": "https://www.target.com.au/store/wa/subiaco/5429"
+  },
+  {
+    "state": "WA",
+    "storeName": "Mandurah",
+    "storeCode": "5430",
+    "url": "https://www.target.com.au/store/wa/mandurah/5430"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Redbank Plains",
+    "storeCode": "5431",
+    "url": "https://www.target.com.au/store/qld/redbank-plains/5431"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Brookside",
+    "storeCode": "5434",
+    "url": "https://www.target.com.au/store/qld/brookside/5434"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Coomera",
+    "storeCode": "5435",
+    "url": "https://www.target.com.au/store/qld/coomera/5435"
+  },
+  {
+    "state": "QLD",
+    "storeName": "Cairns City",
+    "storeCode": "5436",
+    "url": "https://www.target.com.au/store/qld/cairns-city/5436"
+  }
+]
