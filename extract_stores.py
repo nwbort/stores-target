@@ -2,12 +2,11 @@ import json
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
-import urllib.request
-from urllib.error import URLError, HTTPError
 import time
 import argparse
 import re
-import gzip
+import requests
+from requests.exceptions import RequestException
 
 SITEMAP_FILE = "target.com.au-stores-sitemap.xml.xml"
 verbose = False
@@ -25,30 +24,55 @@ def extract_urls_from_sitemap(filepath):
         print(f"Error parsing sitemap: {e}", file=sys.stderr)
         return []
 
-def get_store_details(url):
+def get_store_details(url, session, max_retries=3):
     """Fetch a Target store page and extract details from the HTML."""
-    
-    headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-AU,en;q=0.9',
-    'Accept-Encoding': 'gzip, deflate',
-    }
-    req = urllib.request.Request(url, headers=headers)
-    
-    html = None
-    try:
-        if verbose:
-            print(f"Fetching: {url}", file=sys.stderr)
 
-        with urllib.request.urlopen(req, timeout=10) as response:
-            data = response.read()
-            if response.info().get('Content-Encoding') == 'gzip':
-                data = gzip.decompress(data)
-            html = data.decode('utf-8', errors='ignore')
-    except (URLError, HTTPError) as e:
-        print(f"Error fetching {url}: {e}", file=sys.stderr)
-        return None
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'en-AU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Referer': 'https://www.target.com.au/',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'Cache-Control': 'max-age=0',
+    }
+
+    html = None
+
+    for attempt in range(max_retries):
+        try:
+            if verbose:
+                retry_msg = f" (attempt {attempt + 1}/{max_retries})" if attempt > 0 else ""
+                print(f"Fetching: {url}{retry_msg}", file=sys.stderr)
+
+            response = session.get(url, headers=headers, timeout=15)
+
+            if response.status_code == 200:
+                html = response.text
+                break
+            elif response.status_code == 403:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt
+                    if verbose:
+                        print(f"  Got 403, waiting {wait_time}s before retry...", file=sys.stderr)
+                    time.sleep(wait_time)
+                else:
+                    print(f"Error fetching {url}: HTTP {response.status_code}", file=sys.stderr)
+                    return None
+            else:
+                print(f"Error fetching {url}: HTTP {response.status_code}", file=sys.stderr)
+                return None
+        except RequestException as e:
+            print(f"Error fetching {url}: {e}", file=sys.stderr)
+            if attempt < max_retries - 1:
+                wait_time = 2 ** attempt
+                time.sleep(wait_time)
+            else:
+                return None
     
     # If HTML was not fetched, return None
     if not html:
@@ -125,29 +149,59 @@ def get_store_details(url):
         print(f"Error processing {url}: {e}", file=sys.stderr)
         return None
 
+def check_proxy_configuration():
+    """Check if proxy is configured and warn about potential issues."""
+    import os
+    proxy_vars = ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 'GLOBAL_AGENT_HTTP_PROXY', 'GLOBAL_AGENT_HTTPS_PROXY']
+    active_proxies = {var: os.environ.get(var) for var in proxy_vars if os.environ.get(var)}
+
+    if active_proxies:
+        print("WARNING: Proxy detected in environment. This may cause 403 errors if target.com.au is not whitelisted.", file=sys.stderr)
+        if verbose:
+            for var, value in active_proxies.items():
+                proxy_display = value[:80] + '...' if len(value) > 80 else value
+                print(f"  {var}: {proxy_display}", file=sys.stderr)
+        print("  To bypass proxy issues, run this script from an environment without proxy restrictions.\n", file=sys.stderr)
+
 def main():
     """Main function to scrape all stores and output as JSON."""
     global verbose
-    
+
     parser = argparse.ArgumentParser(description='Extract Target store details from sitemap.')
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose output')
+    parser.add_argument('--check-proxy', action='store_true', help='Check proxy configuration and exit')
     args = parser.parse_args()
     verbose = args.verbose
+
+    if args.check_proxy:
+        check_proxy_configuration()
+        return
     
     if not Path(SITEMAP_FILE).exists():
         print(f"Error: Sitemap file '{SITEMAP_FILE}' not found.", file=sys.stderr)
         sys.exit(1)
-    
+
+    # Check for proxy configuration that might cause issues
+    check_proxy_configuration()
+
     urls = extract_urls_from_sitemap(SITEMAP_FILE)
-    
+
     if verbose:
         print(f"Found {len(urls)} stores in sitemap", file=sys.stderr)
-    
+
     all_stores = []
     errors = []
-    
+
+    # Create a session to maintain cookies and connection pooling
+    session = requests.Session()
+    # Bypass proxy to avoid 403 errors from proxy
+    session.proxies = {
+        'http': None,
+        'https': None
+    }
+
     for i, url in enumerate(urls, 1):
-        store_data = get_store_details(url)
+        store_data = get_store_details(url, session)
         if store_data:
             all_stores.append(store_data)
             if verbose:
@@ -156,8 +210,10 @@ def main():
             errors.append((i, url))
             if verbose:
                 print(f"  [{i}/{len(urls)}] Failed to extract", file=sys.stderr)
-        
-        time.sleep(0.1)
+
+        # Add delay between requests to avoid rate limiting
+        if i < len(urls):
+            time.sleep(0.5)
     
     print(f"\nExtracted {len(all_stores)} stores", file=sys.stderr)
     if errors:
