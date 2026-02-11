@@ -33,7 +33,8 @@ def get_store_details(url, session, max_retries=3):
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'Accept-Language': 'en-AU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7',
         'Accept-Encoding': 'gzip, deflate, br',
-        'Referer': 'https://www.target.com.au/',
+        'Referer': 'https://www.target.com.au/store-locator',
+        'Origin': 'https://www.target.com.au',
         'Sec-Fetch-Dest': 'document',
         'Sec-Fetch-Mode': 'navigate',
         'Sec-Fetch-Site': 'same-origin',
@@ -247,10 +248,21 @@ def main():
         }
         warmup_response = session.get('https://www.target.com.au/', headers=warmup_headers, timeout=10)
         if verbose:
-            print(f"Response: HTTP {warmup_response.status_code}", file=sys.stderr)
+            print(f"Homepage Response: HTTP {warmup_response.status_code}", file=sys.stderr)
             print(f"Cookies received: {len(session.cookies)} cookie(s)", file=sys.stderr)
             for cookie in session.cookies:
                 print(f"  - {cookie.name}: {cookie.value[:20]}...", file=sys.stderr)
+
+        # Now visit the store locator page to establish proper referer chain
+        time.sleep(1)
+        if verbose:
+            print("Visiting store locator page...", file=sys.stderr)
+        locator_headers = warmup_headers.copy()
+        locator_headers['Referer'] = 'https://www.target.com.au/'
+        locator_response = session.get('https://www.target.com.au/store-locator', headers=locator_headers, timeout=10)
+        if verbose:
+            print(f"Store Locator Response: HTTP {locator_response.status_code}", file=sys.stderr)
+            print(f"Total cookies: {len(session.cookies)}", file=sys.stderr)
             print(f"Waiting 2 seconds...", file=sys.stderr)
         time.sleep(2)  # Wait a bit after initial connection
         if verbose:
