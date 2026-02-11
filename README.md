@@ -20,7 +20,19 @@ Options:
 
 ## Requirements
 
-- Python 3.x (no external dependencies required)
+- Python 3.x
+- `requests` library (>=2.31.0)
+- `urllib3` library (>=2.0.0)
+
+Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+Or manually:
+```bash
+pip install requests urllib3
+```
 
 ## Known Issues: Proxy Restrictions
 
@@ -62,10 +74,12 @@ If you're in a restricted environment, you may need to:
 
 - Automatically extracts store URLs from sitemap XML
 - Parses store details including name, phone, address, coordinates, and trading hours
-- Includes retry logic with exponential backoff for transient failures
+- Advanced retry logic with exponential backoff for transient failures
 - Modern browser headers to avoid bot detection
 - Rate limiting (0.5s delay between requests)
-- No external dependencies - uses Python standard library only
+- Session management with connection pooling for better performance
+- Automatic retry strategy for 429/500/502/503/504 errors
+- Configurable to bypass proxy restrictions (trust_env=False)
 
 ## Output Format
 
