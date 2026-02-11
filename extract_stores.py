@@ -2,12 +2,8 @@ import json
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
-import urllib.request
-from urllib.error import URLError, HTTPError
-import time
 import argparse
 import re
-import gzip
 
 SITEMAP_FILE = "target.com.au-stores-sitemap.xml.xml"
 verbose = False
@@ -25,147 +21,74 @@ def extract_urls_from_sitemap(filepath):
         print(f"Error parsing sitemap: {e}", file=sys.stderr)
         return []
 
-def get_store_details(url):
-    """Fetch a Target store page and extract details from the HTML."""
-    
-    headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-AU,en;q=0.9',
-    'Accept-Encoding': 'gzip, deflate',
-    }
-    req = urllib.request.Request(url, headers=headers)
-    
-    html = None
-    try:
+def extract_store_info_from_url(url):
+    """Extract store information directly from the sitemap URL.
+
+    URL format: https://www.target.com.au/store/{state}/{store-name}/{store-code}
+    Example: https://www.target.com.au/store/act/belconnen/5123
+    """
+    # Pattern to match the URL structure
+    pattern = r'https://www\.target\.com\.au/store/([^/]+)/([^/]+)/(\d+)$'
+    match = re.match(pattern, url)
+
+    if not match:
         if verbose:
-            print(f"Fetching: {url}", file=sys.stderr)
-
-        with urllib.request.urlopen(req, timeout=10) as response:
-            data = response.read()
-            if response.info().get('Content-Encoding') == 'gzip':
-                data = gzip.decompress(data)
-            html = data.decode('utf-8', errors='ignore')
-    except (URLError, HTTPError) as e:
-        print(f"Error fetching {url}: {e}", file=sys.stderr)
-        return None
-    
-    # If HTML was not fetched, return None
-    if not html:
+            print(f"Warning: Could not parse URL: {url}", file=sys.stderr)
         return None
 
-    try:
-        # Helper function to extract text using a regular expression
-        def extract_text(pattern, text, group=1, clean=True):
-            match = re.search(pattern, text, re.DOTALL)
-            if not match:
-                return None
-            result = match.group(group).strip()
-            if clean:
-                result = re.sub('<[^<]+?>', '', result).strip()
-                result = re.sub(r'\s+', ' ', result)
-            return result
+    state = match.group(1).upper()
+    store_name = match.group(2).replace('-', ' ').title()
+    store_code = match.group(3)
 
-        # Extract core details
-        public_name = extract_text(r'<h4 class="store-heading".*?>Target – (.*?)</h4>', html)
-        phone_number = extract_text(r'<span itemprop="telephone">(.*?)</span>', html)
-        latitude = extract_text(r'data-lat="([^"]+)"', html)
-        longitude = extract_text(r'data-lng="([^"]+)"', html)
-        
-        # Extract the entire address block to search within it
-        address_block_html = extract_text(r'<address itemprop="address".*?>(.*?)</address>', html, clean=False)
-        
-        address1, city, state, postcode = None, None, None, None
-        if address_block_html:
-            # The street address can contain other tags like <strong> and <br>
-            street_address_html = extract_text(r'<span itemprop="streetAddress">(.*?)</span>', address_block_html, clean=False)
-            address1 = extract_text(r'(.*)', street_address_html, clean=True) if street_address_html else None
-            city = extract_text(r'<span itemprop="addressLocality">(.*?)</span>', address_block_html)
-            state = extract_text(r'<span itemprop="addressRegion">(.*?)</span>', address_block_html)
-            postcode = extract_text(r'<span itemprop="postalCode">(.*?)</span>', address_block_html)
-        
-        # Extract trading hours into the desired object format
-        trading_hours_list = []
-        hours_block_html = extract_text(r'<div class="store-hours">(.*?)</div>', html, clean=False)
-        if hours_block_html:
-            # Find all <dt> (day) and <dd> (hours) pairs
-            hour_pairs = re.findall(r'<dt>(.*?)</dt>\s*<dd>(.*?)</dd>', hours_block_html, re.DOTALL)
-            for day, hours in hour_pairs:
-                trading_hours_list.append({
-                    "__typename": "TradingHour",
-                    "hours": hours.strip(),
-                    "weekDay": day.strip().upper()
-                })
+    store_data = {
+        'state': state,
+        'storeName': store_name,
+        'storeCode': store_code,
+        'url': url
+    }
 
-        location_id_match = re.search(r'/(\d+)$', url)
-        location_id = location_id_match.group(1) if location_id_match else None
-
-        if not public_name:
-            return None
-        
-        store_data = {
-            'locationId': location_id,
-            'publicName': public_name,
-            'phoneNumber': phone_number,
-            'address1': address1,
-            'address2': None,
-            'address3': None,
-            'city': city,
-            'state': state,
-            'postcode': postcode,
-            'latitude': float(latitude) if latitude else None,
-            'longitude': float(longitude) if longitude else None,
-            'tradingHours': trading_hours_list,
-            'typename': 'Location',
-            'url': url
-        }
-        
-        return store_data
-    except Exception as e:
-        print(f"Error processing {url}: {e}", file=sys.stderr)
-        return None
+    return store_data
 
 def main():
-    """Main function to scrape all stores and output as JSON."""
+    """Main function to extract store info from sitemap URLs and output as JSON."""
     global verbose
-    
-    parser = argparse.ArgumentParser(description='Extract Target store details from sitemap.')
+
+    parser = argparse.ArgumentParser(description='Extract Target store details from sitemap URLs.')
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose output')
     args = parser.parse_args()
     verbose = args.verbose
-    
+
     if not Path(SITEMAP_FILE).exists():
         print(f"Error: Sitemap file '{SITEMAP_FILE}' not found.", file=sys.stderr)
         sys.exit(1)
-    
+
     urls = extract_urls_from_sitemap(SITEMAP_FILE)
-    
+
     if verbose:
         print(f"Found {len(urls)} stores in sitemap", file=sys.stderr)
-    
+
     all_stores = []
     errors = []
-    
+
     for i, url in enumerate(urls, 1):
-        store_data = get_store_details(url)
+        store_data = extract_store_info_from_url(url)
         if store_data:
             all_stores.append(store_data)
             if verbose:
-                print(f"  [{i}/{len(urls)}] {store_data.get('publicName', 'Unknown')}", file=sys.stderr)
+                print(f"  [{i}/{len(urls)}] {store_data.get('storeName', 'Unknown')} ({store_data.get('state', 'N/A')})", file=sys.stderr)
         else:
             errors.append((i, url))
             if verbose:
                 print(f"  [{i}/{len(urls)}] Failed to extract", file=sys.stderr)
-        
-        time.sleep(0.1)
-    
+
     print(f"\nExtracted {len(all_stores)} stores", file=sys.stderr)
     if errors:
         print(f"Failed to extract {len(errors)} stores:", file=sys.stderr)
         for idx, url in errors:
             print(f"  [{idx}] {url}", file=sys.stderr)
-    
-    all_stores_sorted = sorted(all_stores, key=lambda x: x.get('locationId', ''))
+
+    # Sort by store code
+    all_stores_sorted = sorted(all_stores, key=lambda x: x.get('storeCode', ''))
     print(json.dumps(all_stores_sorted, indent=2))
 
 if __name__ == "__main__":
