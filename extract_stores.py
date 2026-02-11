@@ -172,6 +172,7 @@ def main():
     parser = argparse.ArgumentParser(description='Extract Target store details from sitemap.')
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose output')
     parser.add_argument('--check-proxy', action='store_true', help='Check proxy configuration and exit')
+    parser.add_argument('--limit', type=int, help='Limit number of stores to process (for testing)')
     args = parser.parse_args()
     verbose = args.verbose
 
@@ -187,6 +188,11 @@ def main():
     check_proxy_configuration()
 
     urls = extract_urls_from_sitemap(SITEMAP_FILE)
+
+    if args.limit:
+        urls = urls[:args.limit]
+        if verbose:
+            print(f"Limited to first {args.limit} stores", file=sys.stderr)
 
     if verbose:
         print(f"Found {len(urls)} stores in sitemap", file=sys.stderr)
@@ -208,6 +214,28 @@ def main():
     session.mount("http://", adapter)
     session.mount("https://", adapter)
 
+    # Establish a session by visiting the main site first to get cookies
+    # This makes us look more like a real browser
+    try:
+        if verbose:
+            print("Establishing session with target.com.au...", file=sys.stderr)
+        warmup_headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-AU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+        }
+        session.get('https://www.target.com.au/', headers=warmup_headers, timeout=10)
+        time.sleep(2)  # Wait a bit after initial connection
+        if verbose:
+            print("Session established successfully\n", file=sys.stderr)
+    except Exception as e:
+        if verbose:
+            print(f"Warning: Could not establish session: {e}\n", file=sys.stderr)
+
     for i, url in enumerate(urls, 1):
         store_data = get_store_details(url, session)
         if store_data:
@@ -221,7 +249,7 @@ def main():
 
         # Add delay between requests to avoid rate limiting
         if i < len(urls):
-            time.sleep(0.5)
+            time.sleep(1.5)
     
     print(f"\nExtracted {len(all_stores)} stores", file=sys.stderr)
     if errors:

@@ -17,6 +17,7 @@ python extract_stores.py > stores.json
 Options:
 - `-v, --verbose` - Enable verbose output to see progress
 - `--check-proxy` - Check proxy configuration and exit
+- `--limit N` - Process only first N stores (useful for testing)
 
 ## Requirements
 
@@ -34,9 +35,23 @@ Or manually:
 pip install requests urllib3
 ```
 
-## Known Issues: Proxy Restrictions
+## Troubleshooting
 
-### Problem
+### Testing the Script
+
+Before running a full scrape, test with a limited number of stores:
+
+```bash
+python extract_stores.py --limit 5 -v > test.json
+```
+
+This will process only the first 5 stores with verbose output, helping you identify issues quickly.
+
+### 403 Forbidden Errors
+
+If you're getting 403 errors, there are two main causes:
+
+#### 1. Proxy Restrictions
 
 This script requires direct internet access to `www.target.com.au`. If you're running it in an environment with a corporate proxy or restricted network that doesn't whitelist `target.com.au`, you'll encounter errors like:
 
@@ -44,42 +59,47 @@ This script requires direct internet access to `www.target.com.au`. If you're ru
 ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden'))
 ```
 
-or
+**Solution**: Run from an environment that either:
+- Has no proxy configured, OR
+- Has a proxy that allows access to `target.com.au`
 
-```
-HTTP Error 403: Forbidden
-```
-
-### Solution
-
-Run the script from an environment that either:
-
-1. Has no proxy configured, OR
-2. Has a proxy that allows access to `target.com.au`
-
-To check if you have proxy issues:
+Check for proxy issues:
 ```bash
 python extract_stores.py --check-proxy
 ```
 
-### Running Without Proxy Restrictions
+#### 2. Bot Detection / Rate Limiting
 
-If you're in a restricted environment, you may need to:
+Target.com.au may be detecting automated requests and blocking them. This can happen if:
+- Requests are too frequent (the script has 1.5s delays to mitigate this)
+- The IP address is flagged (GitHub Actions IPs, VPN IPs, datacenter IPs)
+- Multiple scrapes run in short succession
 
-1. Run the script from your local machine instead
-2. Use a different network with unrestricted internet access
-3. Request that `target.com.au` and `*.target.com.au` be added to your proxy's whitelist
+**What the script does to avoid this:**
+- Establishes a session by visiting the main site first (gets cookies)
+- Uses realistic browser headers (Chrome 120 on Windows)
+- Includes Sec-Fetch-* headers that real browsers send
+- Delays 1.5 seconds between requests
+- Reuses the same session/connection
+
+**If you still get 403 errors:**
+1. Try running from a residential IP address (not datacenter/VPN/GitHub)
+2. Increase the delay between requests (edit line 250: `time.sleep(1.5)` → `time.sleep(3)`)
+3. Test with `--limit 5` first to verify it works at all
+4. Wait some time (hours/days) before retrying if you've been rate-limited
+5. Consider using a headless browser solution (Selenium/Playwright) for full browser emulation
 
 ## Script Features
 
 - Automatically extracts store URLs from sitemap XML
 - Parses store details including name, phone, address, coordinates, and trading hours
-- Advanced retry logic with exponential backoff for transient failures
-- Modern browser headers to avoid bot detection
-- Rate limiting (0.5s delay between requests)
-- Session management with connection pooling for better performance
-- Automatic retry strategy for 429/500/502/503/504 errors
-- Configurable to bypass proxy restrictions (trust_env=False)
+- **Session establishment**: Visits main site first to obtain cookies (mimics real browser)
+- **Advanced retry logic** with exponential backoff for transient failures
+- **Modern browser headers** including Sec-Fetch-* headers to avoid bot detection
+- **Rate limiting**: 1.5 second delay between requests to be respectful
+- **Connection pooling**: Reuses connections for better performance
+- **Automatic retry strategy** for server errors (429, 500, 502, 503, 504)
+- **Testing mode**: Use `--limit` flag to test with subset of stores first
 
 ## Output Format
 
