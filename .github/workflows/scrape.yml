@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !github.event.repository.is_template }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Create scrape.sh if it doesn't exist
       run: |
         if [ ! -f "scrape.sh" ]; then
@@ -37,7 +37,7 @@ jobs:
       run: |
         ./scrape.sh
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: "3.13"
     - name: Extract store details
