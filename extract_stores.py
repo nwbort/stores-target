@@ -5,18 +5,45 @@ from pathlib import Path
 import argparse
 import re
 
-SITEMAP_FILE = "target.com.au-stores-sitemap.xml.xml"
+# download.sh names the file after the URL plus an extension sniffed from the
+# response's MIME type, so the suffix changes if the site switches format.
+SITEMAP_GLOB = "target.com.au-stores-sitemap.xml.*"
 verbose = False
 
+def find_sitemap_file():
+    """Locate the downloaded sitemap, whatever extension download.sh gave it."""
+    matches = sorted(Path('.').glob(SITEMAP_GLOB))
+
+    if not matches:
+        print(f"Error: no sitemap file matching '{SITEMAP_GLOB}' found.", file=sys.stderr)
+        sys.exit(1)
+
+    # More than one means a stale download from a previous format is lingering,
+    # and we can't tell which is current. Fail loudly rather than parse the wrong
+    # one and publish stale data under a green build.
+    if len(matches) > 1:
+        print(f"Error: multiple sitemap files match '{SITEMAP_GLOB}':", file=sys.stderr)
+        for path in matches:
+            print(f"  {path}", file=sys.stderr)
+        print("Delete the stale one(s) so only the current download remains.", file=sys.stderr)
+        sys.exit(1)
+
+    return matches[0]
+
 def extract_urls_from_sitemap(filepath):
-    """Extract store URLs from the sitemap XML file."""
+    """Extract store URLs from the sitemap, which may be XML or JSON."""
     try:
-        tree = ET.parse(filepath)
-        root = tree.getroot()
-        # Handle the namespace
+        text = Path(filepath).read_text().lstrip()
+
+        if text.startswith('{'):
+            # JSON form: {"urls": [{"location": "...", ...}, ...]}
+            data = json.loads(text)
+            return [entry['location'] for entry in data['urls']]
+
+        # XML sitemap form, with the usual sitemaps.org namespace
+        root = ET.fromstring(text)
         namespace = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
-        urls = [elem.text for elem in root.findall('.//ns:loc', namespace)]
-        return urls
+        return [elem.text for elem in root.findall('.//ns:loc', namespace)]
     except Exception as e:
         print(f"Error parsing sitemap: {e}", file=sys.stderr)
         return []
@@ -58,14 +85,12 @@ def main():
     args = parser.parse_args()
     verbose = args.verbose
 
-    if not Path(SITEMAP_FILE).exists():
-        print(f"Error: Sitemap file '{SITEMAP_FILE}' not found.", file=sys.stderr)
-        sys.exit(1)
+    sitemap_file = find_sitemap_file()
 
-    urls = extract_urls_from_sitemap(SITEMAP_FILE)
+    urls = extract_urls_from_sitemap(sitemap_file)
 
     if verbose:
-        print(f"Found {len(urls)} stores in sitemap", file=sys.stderr)
+        print(f"Found {len(urls)} stores in {sitemap_file}", file=sys.stderr)
 
     all_stores = []
     errors = []
@@ -81,7 +106,15 @@ def main():
             if verbose:
                 print(f"  [{i}/{len(urls)}] Failed to extract", file=sys.stderr)
 
-    print(f"\nExtracted {len(all_stores)} stores", file=sys.stderr)
+    print(f"\nExtracted {len(all_stores)} stores from {sitemap_file}", file=sys.stderr)
+
+    # A sitemap that yields nothing means the download or the format changed
+    # again. Exit non-zero so the workflow goes red instead of overwriting
+    # stores.json with an empty list.
+    if not all_stores:
+        print("Error: no stores extracted from the sitemap.", file=sys.stderr)
+        sys.exit(1)
+
     if errors:
         print(f"Failed to extract {len(errors)} stores:", file=sys.stderr)
         for idx, url in errors:
