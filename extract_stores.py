@@ -8,12 +8,18 @@ import xml.etree.ElementTree as ET
 from html import unescape
 from pathlib import Path
 import argparse
+from datetime import date, datetime, timezone
 
 # download.sh names the file after the URL plus an extension sniffed from the
 # response's MIME type, so the suffix changes if the site switches format.
 SITEMAP_GLOB = "target.com.au-stores-sitemap.xml.*"
 DEFAULT_OUTPUT = "stores.json"
 REQUEST_DELAY = 1.0  # seconds between store page fetches, to stay polite
+MAX_AGE_DAYS = 7  # refetch a store's page once its details are this old
+# If at least this many pages were attempted and all failed, we're blocked or
+# the layout changed. Fewer than this (e.g. one brand-new store whose page
+# isn't live yet) only warns, so it doesn't hold up the daily sitemap commit.
+BLOCKED_THRESHOLD = 5
 verbose = False
 
 # Fields filled in from the store page, as opposed to parsed from the URL.
@@ -162,6 +168,14 @@ def load_previous(path):
     except (OSError, ValueError, KeyError, TypeError):
         return {}
 
+def is_fresh(store, today, max_age_days):
+    """Whether a previously scraped store's details are recent enough to reuse."""
+    try:
+        fetched_on = date.fromisoformat(store['detailsFetched'])
+    except (KeyError, TypeError, ValueError):
+        return False  # new store, or never successfully fetched
+    return (today - fetched_on).days < max_age_days
+
 def warn(message):
     """Print a warning, as an annotation when running under GitHub Actions."""
     prefix = '::warning::' if os.environ.get('GITHUB_ACTIONS') else 'Warning: '
@@ -178,6 +192,9 @@ def main():
                              'supply fallback details for any store page that fails to load.')
     parser.add_argument('--no-details', action='store_true',
                         help="Only parse the sitemap URLs; don't fetch store pages")
+    parser.add_argument('--max-age-days', type=int, default=MAX_AGE_DAYS,
+                        help='Refetch a store page once its details are at least this many days old '
+                             f'(default: {MAX_AGE_DAYS}; 0 refetches every store). New stores are always fetched.')
     args = parser.parse_args()
     verbose = args.verbose
 
@@ -189,8 +206,10 @@ def main():
         print(f"Found {len(urls)} stores in {sitemap_file}", file=sys.stderr)
 
     previous = load_previous(args.output)
+    today = datetime.now(timezone.utc).date()
     all_stores = []
     errors = []
+    fetched = 0
     fetch_failures = []
 
     for i, url in enumerate(urls, 1):
@@ -202,15 +221,22 @@ def main():
             continue
 
         if not args.no_details:
-            if i > 1:
-                time.sleep(REQUEST_DELAY)
-            html = fetch_page(url)
-            details = parse_store_page(html) if html else None
-            if details is None:
-                fetch_failures.append(url)
-                # Keep last run's details rather than publishing a blank store
-                old = previous.get(store_data['storeCode'], {})
-                details = {field: old.get(field) for field in DETAIL_FIELDS}
+            old = previous.get(store_data['storeCode'], {})
+            if is_fresh(old, today, args.max_age_days):
+                details = {field: old.get(field) for field in DETAIL_FIELDS + ('detailsFetched',)}
+            else:
+                if fetched or fetch_failures:
+                    time.sleep(REQUEST_DELAY)
+                html = fetch_page(url)
+                details = parse_store_page(html) if html else None
+                if details is None:
+                    fetch_failures.append(url)
+                    # Keep last run's details rather than publishing a blank
+                    # store. The old fetch date stays, so it's retried tomorrow.
+                    details = {field: old.get(field) for field in DETAIL_FIELDS + ('detailsFetched',)}
+                else:
+                    fetched += 1
+                    details['detailsFetched'] = today.isoformat()
             store_data.update(details)
 
         all_stores.append(store_data)
@@ -231,9 +257,13 @@ def main():
         for idx, url in errors:
             print(f"  [{idx}] {url}", file=sys.stderr)
 
+    if not args.no_details:
+        print(f"Fetched details for {fetched} stores; "
+              f"{len(all_stores) - fetched - len(fetch_failures)} were up to date.", file=sys.stderr)
+
     # Every page failing means we're blocked or the page layout changed. Go red
     # so someone notices, and leave the output untouched.
-    if fetch_failures and len(fetch_failures) == len(all_stores):
+    if not fetched and len(fetch_failures) >= BLOCKED_THRESHOLD:
         print("Error: no store page could be fetched and parsed; "
               "the site may be blocking us or its layout changed.", file=sys.stderr)
         sys.exit(1)
