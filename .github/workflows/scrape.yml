@@ -41,7 +41,7 @@ jobs:
       with:
         python-version: "3.13"
     - name: Extract store details
-      run: python extract_stores.py > stores.json
+      run: python extract_stores.py --output stores.json
     - name: Commit and push
       run: |-
         git config user.name "Automated"
